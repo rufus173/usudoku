@@ -70,3 +70,49 @@ char *sudoku__str__(sudoku_t *sudoku){
 void sudoku_init(sudoku_t *sudoku){
 	for (int i = 0; i < 9; i++) memset(sudoku->array[i],0,sizeof(int)*9);
 }
+
+int generate_sudoku(sudoku_t *sudoku){
+	int x,y = 0;
+	if(find_empty_square(&x,&y,sudoku)){
+		//====== the grid still has empty squares ======
+		//get possible values that fit in the x and y we picked
+		int possible_values[9];
+		size_t possible_values_length = get_possible_values(x,y,possible_values,sudoku);
+	}else{
+		//====== the grid is full (sudoku complete) ======
+		//base case where solution has been found
+		return 1;
+	}
+	return 0;
+}
+int find_empty_square(int *x_return,int *y_return,sudoku_t *sudoku){
+	for (int x = 0; x < 9; x++){
+		for (int y = 0; y < 9; y++){
+			if (sudoku->array[x][y] == 0){
+				*x_return = x; *y_return = y;
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+size_t get_possible_values(int x, int y, int possible_values_return[9],sudoku_t *sudoku){
+	//basicly we commit a process of elimination to be left with all the possible values
+	int possible_values[9] = {1,2,3,4,5,6,7,8,9};
+
+	//====== row ======
+
+	//====== column ======
+
+	//====== square ======
+
+	//====== fill the return buffer ======
+	size_t possible_values_return_length = 0;
+	for (int i = 0; i < 9; i++){
+		if (possible_values[i] != 0){
+			possible_values_return[possible_values_return_length] = possible_values[i];
+			possible_values_return_length++;
+		}
+	}
+	return possible_values_return_length;
+}
