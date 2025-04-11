@@ -4,15 +4,17 @@
 #include <time.h> 
 
 int main(int argc, char **argv){
+	//initalise our board
 	sudoku_t sudoku;
+	sudoku_init(&sudoku);
 
+	//set the seed
 	srandom(time(NULL));
 	
 	sudoku.array[0][0] = 1;
-	int test[8] = {1,2,3,4,5,6,7,8};
-	shuffle_int(test,8);
-	for (int i = 0; i < 8; i++) printf("%d,",test[i]);
-	printf("\n");
+	sudoku.array[8][8] = 9;
+	
+	printf("%s\n",sudoku__str__(&sudoku));
 
 	return 0;
 }
