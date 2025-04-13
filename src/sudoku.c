@@ -78,12 +78,29 @@ int generate_sudoku(sudoku_t *sudoku){
 		//get possible values that fit in the x and y we picked
 		int possible_values[9];
 		size_t possible_values_length = get_possible_values(x,y,possible_values,sudoku);
+		//shuffle the values so the generated sudoku is different every time
+		shuffle_int(possible_values,possible_values_length);
+
+		//try all the possible values
+		for (int i = 0; i < possible_values_length; i++){
+			int possible_value = possible_values[i];
+			sudoku->array[x][y] = possible_value;
+
+			//create a new branch and try solution
+			//if solution is found, return immediately and preserve the state of the grid
+			printf("%s\n",sudoku__str__(sudoku));
+			if (generate_sudoku(sudoku)) return 1;
+		}
+
+		//====== no successfull solution on current branch ======
+		//return the grid to where it was at the start of the function call if no solutions were found
+		sudoku->array[x][y] = 0;
+		return 0;
 	}else{
 		//====== the grid is full (sudoku complete) ======
 		//base case where solution has been found
 		return 1;
 	}
-	return 0;
 }
 int find_empty_square(int *x_return,int *y_return,sudoku_t *sudoku){
 	for (int x = 0; x < 9; x++){
@@ -101,10 +118,33 @@ size_t get_possible_values(int x, int y, int possible_values_return[9],sudoku_t 
 	int possible_values[9] = {1,2,3,4,5,6,7,8,9};
 
 	//====== row ======
+	for (int x = 0; x < 9; x++){
+		int value = sudoku->array[x][y];
+		if (value != 0){
+			possible_values[value-1] = 0;
+		}
+	}
 
 	//====== column ======
+	for (int y = 0; y < 9; y++){
+		int value = sudoku->array[x][y];
+		if (value != 0){
+			possible_values[value-1] = 0;
+		}
+	}
 
 	//====== square ======
+	//this is just div because we are performing maths with ints so the result will be an int
+	int square_x = (x/3);
+	int square_y = (y/3);
+	for (int x = square_x; x < square_x+3; x++){
+		for (int y = square_y; y < square_y+3; y++){
+			int value = sudoku->array[x][y];
+			if (value != 0){
+				possible_values[value-1] = 0;
+			}
+		}
+	}
 
 	//====== fill the return buffer ======
 	size_t possible_values_return_length = 0;
