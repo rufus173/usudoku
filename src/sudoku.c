@@ -134,9 +134,9 @@ size_t get_possible_values(int x, int y, int possible_values_return[9],sudoku_t 
 	}
 
 	//====== square ======
-	//this is just div because we are performing maths with ints so the result will be an int
-	int square_x = (x/3);
-	int square_y = (y/3);
+	//get the corner of the square we are in
+	int square_x = x-(x%3);
+	int square_y = y-(y%3);
 	for (int x = square_x; x < square_x+3; x++){
 		for (int y = square_y; y < square_y+3; y++){
 			int value = sudoku->array[x][y];
