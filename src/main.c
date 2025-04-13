@@ -7,10 +7,11 @@ int main(int argc, char **argv){
 	//initalise our board
 	sudoku_t sudoku;
 	sudoku_init(&sudoku);
-	generate_sudoku(&sudoku);
 
 	//set the seed
 	srandom(time(NULL));
+
+	generate_sudoku(&sudoku);
 	
 	//sudoku.array[0][0] = 1;
 	//sudoku.array[8][8] = 9;
