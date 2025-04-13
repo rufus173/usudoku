@@ -190,6 +190,17 @@ void vertical_shuffle(sudoku_t *sudoku){
 		}
 	}
 	//====== shuffle columns within squares ======
+	//the same as before but slightly different
+	for (int i = 0; i < 3; i++){
+		//index within the squares
+		for (int columns_left = 3; columns_left > 0; columns_left--){
+			int column = random()%columns_left;
+			int end_column = columns_left-1;
+			int true_index_a = (i*3)+column;
+			int true_index_b = (i*3)+end_column;
+			swap_int_arrays(sudoku->array[true_index_a],sudoku->array[true_index_b],9);
+		}
+	}
 }
 void shuffle_sudoku(sudoku_t *sudoku){
 	vertical_shuffle(sudoku);
