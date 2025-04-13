@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 void shuffle_int(int *array,size_t len){
 	//fisher-yates shuffle
@@ -88,8 +89,16 @@ int generate_sudoku(sudoku_t *sudoku){
 
 			//create a new branch and try solution
 			//if solution is found, return immediately and preserve the state of the grid
-			printf("%s\n",sudoku__str__(sudoku));
-			if (generate_sudoku(sudoku)) return 1;
+			//printf("%s\n",sudoku__str__(sudoku));
+			//====== unwind when a solution has been found
+			if (generate_sudoku(sudoku)){
+				//====== remove unnessecary squares on the way back up ======
+				if (possible_values_length == 1){
+					//if there is only possible path, we can remove the square and still only have one unique solution
+					sudoku->array[x][y] = 0;
+				}
+				return 1;
+			}
 		}
 
 		//====== no successfull solution on current branch ======
@@ -103,10 +112,19 @@ int generate_sudoku(sudoku_t *sudoku){
 	}
 }
 int find_empty_square(int *x_return,int *y_return,sudoku_t *sudoku){
-	for (int x = 0; x < 9; x++){
-		for (int y = 0; y < 9; y++){
-			if (sudoku->array[x][y] == 0){
-				*x_return = x; *y_return = y;
+	//super slow
+	int x_start = random()%9;
+	int y_start = random()%9;
+
+	//blazing fast
+	x_start = 0;
+	y_start = 0;
+	
+	//====== linear search for an empty space starting from the given x and y ======
+	for (int x = x_start; x < x_start+9; x++){
+		for (int y = y_start; y < y_start+9; y++){
+			if (sudoku->array[x%9][y%9] == 0){
+				*x_return = x%9; *y_return = y%9;
 				return 1;
 			}
 		}
@@ -155,4 +173,33 @@ size_t get_possible_values(int x, int y, int possible_values_return[9],sudoku_t 
 		}
 	}
 	return possible_values_return_length;
+}
+
+//====== this only shuffles on one axis ======
+void vertical_shuffle(sudoku_t *sudoku){
+	int column_pool[] = {0,0,0};
+	//shuffle_int(column_pool,3);
+	//====== shuffle columns of squares ======
+	for (int a = 0; a < 3; a++){//a for arbitrary
+		//"pick" a column from the shuffled pool
+		int column = column_pool[a];
+		int other_column = a;
+		//index within the squares
+		for (int i = 0; i < 3; i++){
+			int true_index_a = (column*3)+i;
+			int true_index_b = (other_column*3)+i;
+			swap_int_arrays(sudoku->array[true_index_a],sudoku->array[true_index_b],9);
+		}
+	}
+	//====== shuffle columns within squares ======
+}
+void shuffle_sudoku(sudoku_t *sudoku){
+	vertical_shuffle(sudoku);
+}
+void swap_int_arrays(int array_a[],int array_b[],size_t len){
+	for (size_t i = 0; i < len; i++){
+		int tmp = array_a[i];
+		array_a[i] = array_b[i];
+		array_b[i] = tmp;
+	}
 }

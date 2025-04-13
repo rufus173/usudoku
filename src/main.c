@@ -12,6 +12,8 @@ int main(int argc, char **argv){
 	srandom(time(NULL));
 
 	generate_sudoku(&sudoku);
+
+	shuffle_sudoku(&sudoku);
 	
 	//sudoku.array[0][0] = 1;
 	//sudoku.array[8][8] = 9;
