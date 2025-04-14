@@ -19,5 +19,6 @@ int find_empty_square(int *x_return,int *y_return,sudoku_t *sudoku);
 size_t get_possible_values(int x, int y, int possible_values_return[9],sudoku_t *sudoku);
 void shuffle_sudoku(sudoku_t *sudoku);
 void swap_int_arrays(int array_a[],int array_b[],size_t len);
+void rotate_clockwise(sudoku_t *sudoku);
 
 #endif

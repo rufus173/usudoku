@@ -204,11 +204,28 @@ void vertical_shuffle(sudoku_t *sudoku){
 }
 void shuffle_sudoku(sudoku_t *sudoku){
 	vertical_shuffle(sudoku);
+	rotate_clockwise(sudoku);
+	vertical_shuffle(sudoku);
 }
 void swap_int_arrays(int array_a[],int array_b[],size_t len){
 	for (size_t i = 0; i < len; i++){
 		int tmp = array_a[i];
 		array_a[i] = array_b[i];
 		array_b[i] = tmp;
+	}
+}
+void rotate_clockwise(sudoku_t *sudoku){
+	//====== reverse columns ======
+	for (int i = 0; i < 5; i++){
+		swap_int_arrays(sudoku->array[i],sudoku->array[8-i],9);
+	}
+	//====== swap axis ======
+	for (int x = 0; x < 9; x++){
+		for (int y = 0; y < x; y++){
+			//xor swap becuase why not
+			sudoku->array[x][y] = sudoku->array[x][y] ^ sudoku->array[y][x];
+			sudoku->array[y][x] = sudoku->array[x][y] ^ sudoku->array[y][x];
+			sudoku->array[x][y] = sudoku->array[x][y] ^ sudoku->array[y][x];
+		}
 	}
 }
