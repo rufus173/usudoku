@@ -13,7 +13,7 @@ char  *realloc_strcat(char *dest,char *src){
 	return dest;
 }
 char *sudoku_to_json_string(sudoku_t *sudoku){
-	char *return_buffer = strdup("{array:[");
+	char *return_buffer = strdup("{\"array\":[");
 	for (int j = 0; j < 9; j++){
 		return_buffer = realloc_strcat(return_buffer,"[");
 		for (int i = 0; i < 9; i++){
