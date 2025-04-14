@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "sudoku.h"
 #include "json_sudoku.h"
+#include "ncurses_interface.h"
 #include <time.h> 
 #include <getopt.h>
 
@@ -57,14 +58,8 @@ int main(int argc, char **argv){
 		return 0;
 	}
 
-
-
-	//sudoku.array[0][0] = 1;
-	//sudoku.array[8][8] = 9;
-	
-	printf("%s\n",sudoku__str__(&sudoku));
-
-	return 0;
+	//====== run the ncurses interface by default ======
+	return ncurses_sudoku(&sudoku);
 }
 
 void print_help(){
