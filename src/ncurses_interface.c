@@ -7,6 +7,8 @@
 #include <locale.h>
 #include <curses.h>
 
+#define SPLASH_DIALOGUE "q: quit, enter: confirm\narrows: move\nnumbers: enter number"
+
 #define SUDOKU_WIDTH 37
 #define SUDOKU_HEIGHT 19
 #define DIALOGUE_HEIGHT 5
@@ -48,7 +50,7 @@ int ncurses_sudoku(sudoku_t *sudoku){
 	update_sudoku_window(sudoku_window,sudoku);
 
 	//====== show help text ======
-	update_dialogue_window(dialogue_window,"this is an interesting string i hav\ne put together for the purpose of ... idk. i hope this was interesting! have a good day");
+	update_dialogue_window(dialogue_window,SPLASH_DIALOGUE);
 
 	getch();
 
@@ -74,6 +76,8 @@ void update_sudoku_window(WINDOW *sudoku_window,sudoku_t *sudoku){
 		mvwprintw(sudoku_window,i,0,"%s",line);
 		i++;
 	}
+	//====== highlight user input squares ======
+
 	wrefresh(sudoku_window);
 }
 void update_dialogue_window(WINDOW *dialogue_window,char *text){

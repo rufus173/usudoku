@@ -53,6 +53,7 @@ int main(int argc, char **argv){
 	//generate and shuffle
 	generate_sudoku(&sudoku);
 	shuffle_sudoku(&sudoku);
+	generate_empty_squares_array(&sudoku);
 	
 	//====== output the result how the user wants it ======
 	switch(output_format){
