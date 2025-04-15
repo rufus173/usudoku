@@ -136,16 +136,18 @@ size_t get_possible_values(int x, int y, int possible_values_return[9],sudoku_t 
 	int possible_values[9] = {1,2,3,4,5,6,7,8,9};
 
 	//====== row ======
-	for (int x = 0; x < 9; x++){
-		int value = sudoku->array[x][y];
+	for (int x_1 = 0; x_1 < 9; x_1++){
+		if (x == x_1) continue;
+		int value = sudoku->array[x_1][y];
 		if (value != 0){
 			possible_values[value-1] = 0;
 		}
 	}
 
 	//====== column ======
-	for (int y = 0; y < 9; y++){
-		int value = sudoku->array[x][y];
+	for (int y_1 = 0; y_1 < 9; y_1++){
+		if (y == y_1) continue;
+		int value = sudoku->array[x][y_1];
 		if (value != 0){
 			possible_values[value-1] = 0;
 		}
@@ -155,9 +157,10 @@ size_t get_possible_values(int x, int y, int possible_values_return[9],sudoku_t 
 	//get the corner of the square we are in
 	int square_x = x-(x%3);
 	int square_y = y-(y%3);
-	for (int x = square_x; x < square_x+3; x++){
-		for (int y = square_y; y < square_y+3; y++){
-			int value = sudoku->array[x][y];
+	for (int x_1 = square_x; x_1 < square_x+3; x_1++){
+		for (int y_1 = square_y; y_1 < square_y+3; y_1++){
+			if (x_1 == x && y_1 == y) continue;
+			int value = sudoku->array[x_1][y_1];
 			if (value != 0){
 				possible_values[value-1] = 0;
 			}
