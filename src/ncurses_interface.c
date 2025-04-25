@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <locale.h>
 #include <curses.h>
+#include <unistd.h>
+
+#define CLAMP(val,min,max) (((val > min) ? ((val < max) ? val : max) : min))
 
 #define SPLASH_DIALOGUE "q: quit, enter: confirm\narrows: move\nnumbers: enter number"
 
@@ -33,6 +36,8 @@ int ncurses_sudoku(sudoku_t *sudoku){
 	//====== initialisation of ncurses ======
 	setlocale(LC_ALL,"");
 	initscr();
+	noecho();
+	keypad(stdscr,true);
 	//====== check if it can fit in the terminal ======
 	if (LINES < MIN_HEIGHT || COLS < MIN_WIDTH){
 		printw("Terminal to small:\nlines %d - requires %d\ncolumns %d - requires %d\n",LINES,MIN_HEIGHT,COLS,MIN_WIDTH);
@@ -52,7 +57,37 @@ int ncurses_sudoku(sudoku_t *sudoku){
 	//====== show help text ======
 	update_dialogue_window(dialogue_window,SPLASH_DIALOGUE);
 
-	getch();
+	unsigned int cursor_y = 0, cursor_x = 0;
+
+	//====== mainloop ======
+	for (;;){
+		//====== get user input ======
+		int input = getch();
+		switch(input){
+			case KEY_LEFT:
+			cursor_x--;
+			break;
+			case KEY_RIGHT:
+			cursor_x++;
+			break;
+			case KEY_UP:
+			cursor_y--;
+			break;
+			case KEY_DOWN:
+			cursor_y++;
+			break;
+		}
+		//====== place the cursor back in the boundary if it has been moved out ======
+		cursor_x = CLAMP(cursor_x,0,8);
+		cursor_y = CLAMP(cursor_y,0,8);
+
+		//====== update the screen ======
+		//update the sudoku window
+		update_sudoku_window(sudoku_window,sudoku);
+		//move the cursor last
+		wmove(sudoku_window,cursor_y*2+1,cursor_x*4+2);
+		wrefresh(sudoku_window);
+	}
 
 	//====== stop ncurses ======
 	endwin();
