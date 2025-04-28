@@ -8,7 +8,9 @@
 #include <curses.h>
 #include <unistd.h>
 
-#define CLAMP(val,min,max) (((val > min) ? ((val < max) ? val : max) : min))
+#define MIN(val1,val2) ((val1 < val2) ? (val1) : (val2))
+#define MAX(val1,val2) ((val1 > val2) ? (val1) : (val2))
+#define CLAMP(val,min,max) (MAX(MIN(val,max),min))
 
 #define SPLASH_DIALOGUE "q: quit, enter: confirm\narrows: move\nnumbers: enter number"
 
@@ -59,6 +61,10 @@ int ncurses_sudoku(sudoku_t *sudoku){
 
 	unsigned int cursor_y = 0, cursor_x = 0;
 
+	//update cursor initaly
+	wmove(sudoku_window,cursor_y*2+1,cursor_x*4+2);
+	wrefresh(sudoku_window);
+
 	//====== mainloop ======
 	for (;;){
 		//====== get user input ======
@@ -75,6 +81,17 @@ int ncurses_sudoku(sudoku_t *sudoku){
 			break;
 			case KEY_DOWN:
 			cursor_y++;
+			break;
+			case KEY_BACKSPACE:
+			sudoku->empty_squares_array[cursor_x][cursor_y] = 0;
+			break;
+			default:
+			//number input
+			if (input >= '1' && input <= '9'){
+				//dont fill in squares that are pregenerated
+				//if (sudoku->array[cursor_x][cursor_y] != 0) break;
+				sudoku->empty_squares_array[cursor_x][cursor_y] = input-48;
+			}
 			break;
 		}
 		//====== place the cursor back in the boundary if it has been moved out ======
@@ -111,7 +128,16 @@ void update_sudoku_window(WINDOW *sudoku_window,sudoku_t *sudoku){
 		mvwprintw(sudoku_window,i,0,"%s",line);
 		i++;
 	}
+	//====== render users inputs ======
+	for (int x = 0; x < 9; x++){
+		for (int y = 0; y < 9; y++){
+			if (sudoku->empty_squares_array[x][y] == 0) continue;
+			mvwprintw(sudoku_window,y*2+1,x*4+2,"%c",sudoku->empty_squares_array[x][y]+48);
+		}
+	}
+
 	//====== highlight user input squares ======
+
 
 	wrefresh(sudoku_window);
 }

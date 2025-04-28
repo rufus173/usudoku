@@ -235,7 +235,7 @@ void rotate_clockwise(sudoku_t *sudoku){
 void generate_empty_squares_array(sudoku_t *sudoku){
 	for (int x = 0; x < 9; x++){
 		for (int y = 0; y < 9; y++){
-			if (sudoku->array[x][y] == 0) sudoku->empty_squares_array[x][y] = 1;
+			if (sudoku->array[x][y] == 0) sudoku->empty_squares_array[x][y] = 0;
 			else sudoku->empty_squares_array[x][y] = 0;
 		}
 	}
