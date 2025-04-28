@@ -70,6 +70,7 @@ char *sudoku__str__(sudoku_t *sudoku){
 
 void sudoku_init(sudoku_t *sudoku){
 	for (int i = 0; i < 9; i++) memset(sudoku->array[i],0,sizeof(int)*9);
+	for (int i = 0; i < 9; i++) memset(sudoku->empty_squares_array[i],0,sizeof(int)*9);
 }
 
 int generate_sudoku(sudoku_t *sudoku){

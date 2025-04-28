@@ -7,6 +7,7 @@
 #include <locale.h>
 #include <curses.h>
 #include <unistd.h>
+#include <assert.h>
 
 #define MIN(val1,val2) ((val1 < val2) ? (val1) : (val2))
 #define MAX(val1,val2) ((val1 > val2) ? (val1) : (val2))
@@ -20,6 +21,11 @@
 
 #define MIN_WIDTH SUDOKU_WIDTH
 #define MIN_HEIGHT (SUDOKU_HEIGHT+DIALOGUE_HEIGHT)
+
+enum {
+	PAIR_DEFAULT = 1, 
+	PAIR_USER_ENTERED = 2, //colours for the numbers the user enters
+} pairs;
 
 /*
 +-----------+ the top half if the actual board,
@@ -40,6 +46,10 @@ int ncurses_sudoku(sudoku_t *sudoku){
 	initscr();
 	noecho();
 	keypad(stdscr,true);
+	start_color();
+	//====== custom colours ======
+	init_pair(PAIR_DEFAULT,COLOR_WHITE,COLOR_BLACK);
+	init_pair(PAIR_USER_ENTERED,COLOR_GREEN,COLOR_BLACK);
 	//====== check if it can fit in the terminal ======
 	if (LINES < MIN_HEIGHT || COLS < MIN_WIDTH){
 		printw("Terminal to small:\nlines %d - requires %d\ncolumns %d - requires %d\n",LINES,MIN_HEIGHT,COLS,MIN_WIDTH);
@@ -85,11 +95,13 @@ int ncurses_sudoku(sudoku_t *sudoku){
 			case KEY_BACKSPACE:
 			sudoku->empty_squares_array[cursor_x][cursor_y] = 0;
 			break;
+			case 'q':
+			goto stop;
 			default:
 			//number input
 			if (input >= '1' && input <= '9'){
 				//dont fill in squares that are pregenerated
-				//if (sudoku->array[cursor_x][cursor_y] != 0) break;
+				if (sudoku->array[cursor_x][cursor_y] != 0) break;
 				sudoku->empty_squares_array[cursor_x][cursor_y] = input-48;
 			}
 			break;
@@ -107,6 +119,7 @@ int ncurses_sudoku(sudoku_t *sudoku){
 	}
 
 	//====== stop ncurses ======
+	stop:
 	endwin();
 	delwin(sudoku_window);
 	delwin(dialogue_window);
@@ -114,7 +127,26 @@ int ncurses_sudoku(sudoku_t *sudoku){
 }
 
 void update_sudoku_window(WINDOW *sudoku_window,sudoku_t *sudoku){
-	char *sudoku_as_string = sudoku__str__(sudoku);
+	char *sudoku_as_string = strdup(
+"╔═══╤═══╤═══╦═══╤═══╤═══╦═══╤═══╤═══╗\n"
+"║   │   │   ║   │   │   ║   │   │   ║\n"
+"╟───┼───┼───╫───┼───┼───╫───┼───┼───╢\n"
+"║   │   │   ║   │   │   ║   │   │   ║\n"
+"╟───┼───┼───╫───┼───┼───╫───┼───┼───╢\n"
+"║   │   │   ║   │   │   ║   │   │   ║\n"
+"╠═══╪═══╪═══╬═══╪═══╪═══╬═══╪═══╪═══╣\n"
+"║   │   │   ║   │   │   ║   │   │   ║\n"
+"╟───┼───┼───╫───┼───┼───╫───┼───┼───╢\n"
+"║   │   │   ║   │   │   ║   │   │   ║\n"
+"╟───┼───┼───╫───┼───┼───╫───┼───┼───╢\n"
+"║   │   │   ║   │   │   ║   │   │   ║\n"
+"╠═══╪═══╪═══╬═══╪═══╪═══╬═══╪═══╪═══╣\n"
+"║   │   │   ║   │   │   ║   │   │   ║\n"
+"╟───┼───┼───╫───┼───┼───╫───┼───┼───╢\n"
+"║   │   │   ║   │   │   ║   │   │   ║\n"
+"╟───┼───┼───╫───┼───┼───╫───┼───┼───╢\n"
+"║   │   │   ║   │   │   ║   │   │   ║\n"
+"╚═══╧═══╧═══╩═══╧═══╧═══╩═══╧═══╧═══╝\n");
 	//====== split and print each line individualy ======
 	char *line;
 	char *next_line = sudoku_as_string;
@@ -128,16 +160,24 @@ void update_sudoku_window(WINDOW *sudoku_window,sudoku_t *sudoku){
 		mvwprintw(sudoku_window,i,0,"%s",line);
 		i++;
 	}
+	//====== render pregenerated numbers ======
+	for (int x = 0; x < 9; x++){
+		for (int y = 0; y < 9; y++){
+			if (sudoku->array[x][y] == 0) continue;
+			mvwprintw(sudoku_window,y*2+1,x*4+2,"%c",sudoku->array[x][y]+48);
+		}
+	}
 	//====== render users inputs ======
 	for (int x = 0; x < 9; x++){
 		for (int y = 0; y < 9; y++){
 			if (sudoku->empty_squares_array[x][y] == 0) continue;
-			mvwprintw(sudoku_window,y*2+1,x*4+2,"%c",sudoku->empty_squares_array[x][y]+48);
+			int char_attributes = A_DIM | COLOR_PAIR(PAIR_USER_ENTERED);
+			mvwaddch(sudoku_window,y*2+1,x*4+2,(sudoku->empty_squares_array[x][y]+48) | char_attributes);
+			//====== highlight user input squares ======
 		}
 	}
 
-	//====== highlight user input squares ======
-
+	free(sudoku_as_string);
 
 	wrefresh(sudoku_window);
 }
