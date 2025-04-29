@@ -13,7 +13,7 @@
 #define MAX(val1,val2) ((val1 > val2) ? (val1) : (val2))
 #define CLAMP(val,min,max) (MAX(MIN(val,max),min))
 
-#define SPLASH_DIALOGUE "q: quit, enter: confirm\narrows: move\nnumbers: enter number"
+#define SPLASH_DIALOGUE "q: quit, backspace: delete number\narrows: move\nnumbers: enter number"
 
 #define SUDOKU_WIDTH 37
 #define SUDOKU_HEIGHT 19
