@@ -53,12 +53,6 @@ int main(int argc, char **argv){
 	//generate and shuffle
 	generate_sudoku(&sudoku);
 	shuffle_sudoku(&sudoku);
-	for (int x = 0; x < 9; x++){
-		for (int y = 0; y < 9; y++) {
-			printf("%d ",sudoku.empty_squares_array[x][y]);
-		}
-		printf("\n");
-	}
 	
 	//====== output the result how the user wants it ======
 	switch(output_format){

@@ -69,7 +69,7 @@ int ncurses_sudoku(sudoku_t *sudoku){
 	//====== show help text ======
 	update_dialogue_window(dialogue_window,SPLASH_DIALOGUE);
 
-	unsigned int cursor_y = 0, cursor_x = 0;
+	int cursor_y = 0, cursor_x = 0;
 
 	//update cursor initaly
 	wmove(sudoku_window,cursor_y*2+1,cursor_x*4+2);
@@ -107,8 +107,9 @@ int ncurses_sudoku(sudoku_t *sudoku){
 			break;
 		}
 		//====== place the cursor back in the boundary if it has been moved out ======
-		cursor_x = CLAMP(cursor_x,0,8);
-		cursor_y = CLAMP(cursor_y,0,8);
+		//use truncated division modulus to wrap cursor
+		cursor_x = ((cursor_x % 9) + 9)%9;
+		cursor_y = ((cursor_y % 9) + 9)%9;
 
 		//====== update the screen ======
 		//update the sudoku window
